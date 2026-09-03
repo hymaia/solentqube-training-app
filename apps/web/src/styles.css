@@ -1,0 +1,384 @@
+:root {
+  --bg: #1c1f26;
+  --panel: #252932;
+  --border: #333845;
+  --text: #e4e6eb;
+  --muted: #9aa1ad;
+  --blocker: #d4333f;
+  --critical: #e8663d;
+  --major: #f0a020;
+  --minor: #5b9bd5;
+  --info: #8a93a1;
+  --comment: #7c5cd4;
+  --accent: #4c8fd6;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+}
+
+.app-title {
+  color: var(--text);
+  font-weight: 700;
+  font-size: 1.1rem;
+  text-decoration: none;
+}
+
+.app-main {
+  flex: 1;
+  padding: 20px;
+}
+
+.not-found {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+a {
+  color: var(--accent);
+}
+
+/* Project list */
+
+.project-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.project-card {
+  display: block;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.project-card:hover {
+  border-color: var(--accent);
+}
+
+.project-card-name {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+
+.project-card-id {
+  font-family: var(--mono);
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin: 0 0 12px;
+}
+
+.project-card-error {
+  color: var(--blocker);
+  font-size: 0.9rem;
+}
+
+.count-row {
+  display: flex;
+  gap: 12px;
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.chip-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* Project page */
+
+.project-page-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.project-page-title {
+  margin: 0;
+}
+
+.filter-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-toggle {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.filter-toggle.active {
+  border-color: var(--accent);
+  color: var(--text);
+  background: rgba(76, 143, 214, 0.15);
+}
+
+.project-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 280px) 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.file-tree {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.file-tree-link {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-family: var(--mono);
+}
+
+.file-tree-link:hover,
+.file-tree-link.active {
+  background: rgba(76, 143, 214, 0.15);
+}
+
+.file-tree-path {
+  overflow-wrap: anywhere;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.badge-zero {
+  background: var(--border);
+  color: var(--muted);
+}
+
+.right-pane {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel);
+  padding: 16px;
+  min-height: 200px;
+}
+
+/* Severity color scale, applied to badges, chips, accents */
+
+.sev-blocker {
+  background: var(--blocker);
+}
+.sev-critical {
+  background: var(--critical);
+}
+.sev-major {
+  background: var(--major);
+}
+.sev-minor {
+  background: var(--minor);
+}
+.sev-info {
+  background: var(--info);
+}
+.sev-comment {
+  background: var(--comment);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  color: #fff;
+}
+
+/* Type / status badges */
+
+.type-badge,
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+/* Code viewer */
+
+.code-viewer {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  overflow-x: auto;
+}
+
+.code-viewer-note {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+}
+
+.code-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.code-row-container {
+  margin: 0;
+  padding: 0;
+}
+
+.code-row-container.targeted {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.code-row {
+  display: flex;
+  align-items: flex-start;
+  border-left: 3px solid transparent;
+}
+
+.code-row.has-issues {
+  border-left-color: var(--muted);
+}
+
+.code-row.sev-blocker {
+  border-left-color: var(--blocker);
+}
+.code-row.sev-critical {
+  border-left-color: var(--critical);
+}
+.code-row.sev-major {
+  border-left-color: var(--major);
+}
+.code-row.sev-minor {
+  border-left-color: var(--minor);
+}
+.code-row.sev-info {
+  border-left-color: var(--info);
+}
+.code-row.sev-comment-only {
+  border-left-color: var(--comment);
+}
+
+
+.code-gutter {
+  position: sticky;
+  left: 0;
+  min-width: 40px;
+  text-align: right;
+  padding: 0 8px;
+  color: var(--muted);
+  background: var(--bg);
+  user-select: none;
+}
+
+.code-marker {
+  min-width: 24px;
+  text-align: center;
+  padding: 0 4px;
+  color: var(--text);
+}
+
+.code-line-button {
+  flex: 1;
+  display: flex;
+  text-align: left;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+.code-line-text {
+  flex: 1;
+  white-space: pre;
+  margin: 0;
+  padding: 0 8px;
+}
+
+.issue-panel {
+  margin: 0 0 8px 40px;
+  padding: 8px 12px;
+  border-left: 2px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.issue-panel-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.issue-panel-badges {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.issue-panel-message {
+  margin: 0;
+}
+
+.issue-panel-meta {
+  color: var(--muted);
+  font-size: 0.75rem;
+}

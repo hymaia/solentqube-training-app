@@ -1,0 +1,392 @@
+openapi: 3.0.3
+info:
+  title: SolentQube API
+  version: 1.0.0
+  description: >
+    CRUD API for line-anchored code review findings — vulnerabilities, quality
+    gate violations and comments — grouped by project. Projects themselves are
+    not managed by this API; project identifiers are supplied by the client.
+    No authentication in this version.
+servers:
+  - url: http://localhost:3001
+    description: Local development
+
+paths:
+  /issues/{projectId}:
+    parameters:
+      - $ref: '#/components/parameters/projectId'
+    get:
+      operationId: listIssues
+      summary: List issues for a project
+      description: >
+        Returns every issue belonging to the given project, optionally
+        narrowed by file path and/or by one or more issue-type, severity,
+        and status values. All supplied filters are combined with AND
+        semantics; repeated array-valued parameters are combined with OR
+        semantics within that parameter.
+      parameters:
+        - name: file
+          in: query
+          required: false
+          description: Exact repo-relative POSIX file path to filter by.
+          schema:
+            type: string
+            example: src/auth/login.ts
+        - name: type
+          in: query
+          required: false
+          description: One or more issue types to include. Repeat the parameter for multiple values.
+          style: form
+          explode: true
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/IssueType'
+        - name: severity
+          in: query
+          required: false
+          description: One or more severities to include. Repeat the parameter for multiple values.
+          style: form
+          explode: true
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/IssueSeverity'
+        - name: status
+          in: query
+          required: false
+          description: One or more statuses to include. Repeat the parameter for multiple values.
+          style: form
+          explode: true
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/IssueStatus'
+      responses:
+        '200':
+          description: The (possibly filtered) list of issues for the project.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Issue'
+        '400':
+          description: A query parameter value is not a valid enum member.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: No project exists with the given projectId.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      operationId: createIssue
+      summary: Create a new issue on a project
+      description: >
+        Creates a new issue belonging to the given project. The server
+        assigns id, projectId, createdAt and updatedAt; supplying any of
+        those fields in the request body is a validation error.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewIssue'
+      responses:
+        '201':
+          description: The created issue.
+          headers:
+            Location:
+              description: URL of the newly created issue.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+        '400':
+          description: The request body is missing a required field or includes a server-assigned field.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: No project exists with the given projectId.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /issues/{projectId}/{issueId}:
+    parameters:
+      - $ref: '#/components/parameters/projectId'
+      - $ref: '#/components/parameters/issueId'
+    get:
+      operationId: getIssue
+      summary: Get a single issue
+      description: Returns one issue by id, scoped to the given project.
+      responses:
+        '200':
+          description: The requested issue.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+        '404':
+          description: No project exists with the given projectId, or no issue with the given issueId exists in that project.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      operationId: updateIssue
+      summary: Update an existing issue
+      description: >
+        Partially updates an issue. author, id, projectId and createdAt are
+        immutable and rejected with a validation error; the server refreshes
+        updatedAt on every successful update.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueUpdate'
+      responses:
+        '200':
+          description: The updated issue.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+        '400':
+          description: The request body is empty or attempts to modify an immutable field.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: No project exists with the given projectId, or no issue with the given issueId exists in that project.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      operationId: deleteIssue
+      summary: Delete an issue
+      description: Permanently deletes one issue by id, scoped to the given project.
+      responses:
+        '204':
+          description: The issue was deleted. No response body.
+        '404':
+          description: No project exists with the given projectId, or no issue with the given issueId exists in that project.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  parameters:
+    projectId:
+      name: projectId
+      in: path
+      required: true
+      description: Identifier of the project the issue belongs to.
+      schema:
+        type: string
+        pattern: '^[a-z0-9][a-z0-9-]*$'
+        example: acme-payments
+    issueId:
+      name: issueId
+      in: path
+      required: true
+      description: Identifier of the issue.
+      schema:
+        type: string
+        minLength: 1
+        example: iss-001
+
+  schemas:
+    IssueType:
+      type: string
+      description: The kind of finding an issue represents.
+      enum: [VULNERABILITY, QUALITY_GATE_VIOLATION, COMMENT]
+    IssueSeverity:
+      type: string
+      description: How serious the finding is. Only meaningful for non-COMMENT issues.
+      enum: [BLOCKER, CRITICAL, MAJOR, MINOR, INFO]
+    IssueStatus:
+      type: string
+      description: The current triage state of the finding.
+      enum: [OPEN, CONFIRMED, RESOLVED, FALSE_POSITIVE]
+    Issue:
+      type: object
+      description: >
+        A single line-anchored finding. If type is COMMENT then severity and
+        rule are null and author is non-null; for any other type, severity
+        and rule are non-null and author is null.
+      required:
+        - id
+        - projectId
+        - filePath
+        - line
+        - type
+        - severity
+        - status
+        - rule
+        - message
+        - author
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          description: Opaque, server-assigned identifier.
+          example: iss-001
+        projectId:
+          type: string
+          description: Identifier of the project this issue belongs to.
+          example: acme-payments
+        filePath:
+          type: string
+          description: Repo-relative POSIX path of the file the issue is anchored to.
+          example: src/auth/login.ts
+        line:
+          type: integer
+          minimum: 1
+          description: 1-indexed line number the issue is anchored to.
+          example: 12
+        type:
+          $ref: '#/components/schemas/IssueType'
+        severity:
+          allOf:
+            - $ref: '#/components/schemas/IssueSeverity'
+          nullable: true
+          description: Null when type is COMMENT; otherwise non-null.
+        status:
+          $ref: '#/components/schemas/IssueStatus'
+        rule:
+          type: string
+          nullable: true
+          description: Opaque rule key shaped S<digits>. Null when type is COMMENT; otherwise non-null.
+          example: S3649
+        message:
+          type: string
+          description: Human-readable description of the finding.
+          example: SQL query is built from user-controlled input; use a parameterized query.
+        author:
+          type: string
+          nullable: true
+          description: Comment author. Non-null when type is COMMENT; otherwise null.
+          example: marie
+        createdAt:
+          type: string
+          format: date-time
+          description: ISO-8601 UTC timestamp of creation.
+          example: '2026-08-14T09:12:00.000Z'
+        updatedAt:
+          type: string
+          format: date-time
+          description: ISO-8601 UTC timestamp of the last update.
+          example: '2026-08-14T09:12:00.000Z'
+    NewIssue:
+      type: object
+      description: Request body for creating an issue. id, projectId, createdAt and updatedAt are server-assigned and rejected if supplied.
+      required: [filePath, line, type, message]
+      properties:
+        filePath:
+          type: string
+          description: Repo-relative POSIX path of the file the issue is anchored to.
+          example: src/auth/login.ts
+        line:
+          type: integer
+          minimum: 1
+          description: 1-indexed line number the issue is anchored to.
+          example: 12
+        type:
+          $ref: '#/components/schemas/IssueType'
+        severity:
+          allOf:
+            - $ref: '#/components/schemas/IssueSeverity'
+          nullable: true
+          description: Null when type is COMMENT; otherwise required.
+        status:
+          allOf:
+            - $ref: '#/components/schemas/IssueStatus'
+          description: Defaults to OPEN when omitted.
+        rule:
+          type: string
+          nullable: true
+          description: Opaque rule key shaped S<digits>. Null when type is COMMENT; otherwise required.
+          example: S3649
+        message:
+          type: string
+          description: Human-readable description of the finding.
+          example: SQL query is built from user-controlled input; use a parameterized query.
+        author:
+          type: string
+          nullable: true
+          description: Comment author. Required when type is COMMENT; otherwise omitted.
+          example: marie
+    IssueUpdate:
+      type: object
+      description: >
+        Request body for partially updating an issue. All properties are
+        optional but at least one must be supplied; an empty object is a
+        validation error. author, id, projectId and createdAt are immutable
+        and rejected if supplied.
+      properties:
+        filePath:
+          type: string
+          description: Repo-relative POSIX path of the file the issue is anchored to.
+          example: src/auth/login.ts
+        line:
+          type: integer
+          minimum: 1
+          description: 1-indexed line number the issue is anchored to.
+          example: 12
+        type:
+          $ref: '#/components/schemas/IssueType'
+        severity:
+          allOf:
+            - $ref: '#/components/schemas/IssueSeverity'
+          nullable: true
+          description: Null when type is COMMENT; otherwise non-null.
+        status:
+          $ref: '#/components/schemas/IssueStatus'
+        rule:
+          type: string
+          nullable: true
+          description: Opaque rule key shaped S<digits>. Null when type is COMMENT; otherwise non-null.
+          example: S3649
+        message:
+          type: string
+          description: Human-readable description of the finding.
+          example: SQL query is built from user-controlled input; use a parameterized query.
+    ErrorResponse:
+      type: object
+      description: Standard error body returned by every non-2xx response.
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          description: Machine-readable error identifier.
+          enum:
+            - PROJECT_NOT_FOUND
+            - ISSUE_NOT_FOUND
+            - INVALID_QUERY
+            - INVALID_BODY
+            - NOT_IMPLEMENTED
+          example: PROJECT_NOT_FOUND
+        message:
+          type: string
+          description: Human-readable explanation of the error.
+          example: Unknown project 'acme-payment'.
+        details:
+          type: array
+          description: Optional list of additional detail strings, e.g. one per invalid field.
+          items:
+            type: string

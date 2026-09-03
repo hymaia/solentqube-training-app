@@ -1,0 +1,9 @@
+{
+  "filePath": "src/example.ts",
+  "line": 1,
+  "type": "QUALITY_GATE_VIOLATION",
+  "severity": "MINOR",
+  "status": "OPEN",
+  "rule": "S0000",
+  "message": "Describe the quality gate violation here."
+}

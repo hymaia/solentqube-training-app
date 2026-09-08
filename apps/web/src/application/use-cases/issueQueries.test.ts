@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import type { Issue } from '../../domain/entities/Issue';
-import { groupIssuesByLine, highestSeverity, summarize } from './issueQueries';
+import { groupIssuesByLine, summarize } from './issueQueries';
 
 const T = '2026-08-14T09:12:00.000Z';
 
@@ -98,16 +98,6 @@ describe('groupIssuesByLine', () => {
     expect(grouped.size).toBe(4);
     expect(grouped.get(12)?.map((i) => i.id)).toEqual(['iss-003', 'iss-004']);
     expect(grouped.get(5)).toBeUndefined();
-  });
-});
-
-describe('highestSeverity', () => {
-  it('returns MAJOR for a mixed violation+comment bucket', () => {
-    expect(highestSeverity([LOGIN_ISSUES[2], LOGIN_ISSUES[3]])).toBe('MAJOR');
-  });
-
-  it('returns null for a comment-only bucket', () => {
-    expect(highestSeverity([CHARGE_COMMENT])).toBeNull();
   });
 });
 

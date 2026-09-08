@@ -2,8 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import type { ProjectFile } from '../../../domain/entities/Project';
 import type { Issue } from '../../../domain/entities/Issue';
-import { groupIssuesByLine, highestSeverity } from '../../../application/use-cases/issueQueries';
-import { severityClass } from '../badges/SeverityBadge';
+import { groupIssuesByLine } from '../../../application/use-cases/issueQueries';
 import { TypeBadge } from '../badges/TypeBadge';
 import { SeverityBadge } from '../badges/SeverityBadge';
 import { StatusBadge } from '../badges/StatusBadge';
@@ -50,8 +49,6 @@ export function CodeViewer({ file, issues }: { file: ProjectFile; issues: Issue[
           const lineNumber = index + 1;
           const bucket = grouped.get(lineNumber) ?? [];
           const hasIssues = bucket.length > 0;
-          const best = highestSeverity(bucket);
-          const rowSeverityClass = hasIssues ? (best === null ? 'sev-comment-only' : severityClass(best)) : '';
           const isExpanded = expanded.has(lineNumber);
           const isTargeted = targetLine === lineNumber;
 
@@ -64,7 +61,7 @@ export function CodeViewer({ file, issues }: { file: ProjectFile; issues: Issue[
               }}
               className={`code-row-container${isTargeted ? ' targeted' : ''}`}
             >
-              <div className={`code-row${hasIssues ? ' has-issues' : ''} ${rowSeverityClass}`}>
+              <div className={`code-row${hasIssues ? ' has-issues' : ''}`}>
                 <span className="code-gutter">{lineNumber}</span>
                 {hasIssues ? (
                   <button

@@ -2,13 +2,6 @@ import type { Issue, IssueType, IssueSeverity } from '../../domain/entities/Issu
 
 const ISSUE_TYPES: IssueType[] = ['VULNERABILITY', 'QUALITY_GATE_VIOLATION', 'COMMENT'];
 const ISSUE_SEVERITIES: IssueSeverity[] = ['BLOCKER', 'CRITICAL', 'MAJOR', 'MINOR', 'INFO'];
-const SEVERITY_RANK: Record<IssueSeverity, number> = {
-  BLOCKER: 0,
-  CRITICAL: 1,
-  MAJOR: 2,
-  MINOR: 3,
-  INFO: 4,
-};
 
 export function groupIssuesByLine(issues: Issue[]): Map<number, Issue[]> {
   const byLine = new Map<number, Issue[]>();
@@ -44,15 +37,4 @@ export function summarize(issues: Issue[]): {
   }
 
   return { total: issues.length, byType, bySeverity };
-}
-
-export function highestSeverity(issues: Issue[]): IssueSeverity | null {
-  let best: IssueSeverity | null = null;
-  for (const issue of issues) {
-    if (issue.severity === null) continue;
-    if (best === null || SEVERITY_RANK[issue.severity] < SEVERITY_RANK[best]) {
-      best = issue.severity;
-    }
-  }
-  return best;
 }

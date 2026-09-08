@@ -8,10 +8,6 @@ const CLASS_BY_SEVERITY: Record<IssueSeverity, string> = {
   INFO: 'sev-info',
 };
 
-export function severityClass(severity: IssueSeverity | null): string {
-  return severity === null ? 'sev-comment' : CLASS_BY_SEVERITY[severity];
-}
-
 export function SeverityBadge({ severity }: { severity: IssueSeverity }) {
   return <span className={`chip ${CLASS_BY_SEVERITY[severity]}`}>{severity}</span>;
 }

@@ -296,20 +296,11 @@ a {
   border-left-color: var(--muted);
 }
 
-.code-row.sev-blocker {
-  border-left-color: var(--blocker);
-}
 .code-row.sev-critical {
   border-left-color: var(--critical);
 }
-.code-row.sev-major {
-  border-left-color: var(--major);
-}
 .code-row.sev-minor {
   border-left-color: var(--minor);
-}
-.code-row.sev-info {
-  border-left-color: var(--info);
 }
 .code-row.sev-comment-only {
   border-left-color: var(--comment);

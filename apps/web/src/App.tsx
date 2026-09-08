@@ -16,7 +16,7 @@ export default function App() {
     <div className="app">
       <header className="app-header">
         <Link to="/" className="app-title">
-          SolentQube
+          Smart4Qube
         </Link>
       </header>
       <main className="app-main">

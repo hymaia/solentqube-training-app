@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-API_URL="${SOLENTQUBE_API_URL:-http://localhost:3001}"
+API_URL="${SMART4QUBE_API_URL:-http://localhost:3001}"
 PROJECT_ID="${1:-}"
 ISSUE_ID="${2:-}"
 
@@ -12,7 +12,7 @@ Usage: scripts/remove-issue.sh <projectId> <issueId>
 Deletes an issue via DELETE \$API_URL/issues/:projectId/:issueId.
 Run scripts/list-issues.sh <projectId> first to find an issueId.
 
-Env: SOLENTQUBE_API_URL (default http://localhost:3001)
+Env: SMART4QUBE_API_URL (default http://localhost:3001)
 EOF
   exit 1
 fi

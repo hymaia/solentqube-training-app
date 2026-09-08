@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: SolentQube API
+  title: Smart4Qube API
   version: 1.0.0
   description: >
     CRUD API for line-anchored code review findings — vulnerabilities, quality

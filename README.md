@@ -1,4 +1,4 @@
-# SolentQube
+# Smart4Qube
 
 A SonarQube-like code review viewer: browse sample repositories, and read
 line-anchored vulnerabilities, quality gate violations, and comments.

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-API_URL="${SOLENTQUBE_API_URL:-http://localhost:3001}"
+API_URL="${SMART4QUBE_API_URL:-http://localhost:3001}"
 PROJECT_ID="${1:-}"
 QUERY="${2:-}"
 
@@ -17,7 +17,7 @@ Examples:
   scripts/list-issues.sh acme-payments "type=COMMENT"
   scripts/list-issues.sh acme-payments "severity=BLOCKER&severity=CRITICAL"
 
-Env: SOLENTQUBE_API_URL (default http://localhost:3001)
+Env: SMART4QUBE_API_URL (default http://localhost:3001)
 EOF
   exit 1
 fi

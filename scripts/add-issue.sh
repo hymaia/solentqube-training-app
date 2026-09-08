@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-API_URL="${SOLENTQUBE_API_URL:-http://localhost:3001}"
+API_URL="${SMART4QUBE_API_URL:-http://localhost:3001}"
 PROJECT_ID="${1:-}"
 JSON_FILE="${2:-}"
 
@@ -13,7 +13,7 @@ Creates an issue via POST \$API_URL/issues/:projectId, sending the
 given JSON file as the request body. Copy one of scripts/examples/*.json
 as a starting point (one template per issue type) and edit it.
 
-Env: SOLENTQUBE_API_URL (default http://localhost:3001)
+Env: SMART4QUBE_API_URL (default http://localhost:3001)
 EOF
   exit 1
 fi

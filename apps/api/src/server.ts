@@ -3,5 +3,5 @@ import { createApp } from './app.js';
 const port = Number(process.env.PORT ?? 3001);
 
 createApp().listen(port, () => {
-  console.log(`SolentQube stub API on http://localhost:${port}`);
+  console.log(`Smart4Qube stub API on http://localhost:${port}`);
 });
